@@ -122,7 +122,6 @@ HashtablezInfo::~HashtablezInfo() = default;
 
 
 void HashtablezInfo::PrepareForSampling() {
-#if 0  
   capacity.store(0, std::memory_order_relaxed);
   size.store(0, std::memory_order_relaxed);
   num_erases.store(0, std::memory_order_relaxed);
@@ -130,6 +129,7 @@ void HashtablezInfo::PrepareForSampling() {
   total_probe_length.store(0, std::memory_order_relaxed);
   hashes_bitwise_or.store(0, std::memory_order_relaxed);
   hashes_bitwise_and.store(~size_t{}, std::memory_order_relaxed);
+#if 0
 
   create_time = absl::Now();
   // The inliner makes hardcoded skip_count difficult (especially when combined

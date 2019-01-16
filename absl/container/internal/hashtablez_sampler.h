@@ -54,7 +54,6 @@ struct HashtablezInfo {
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.
-#if 1
   std::atomic<size_t> capacity;
   std::atomic<size_t> size;
   std::atomic<size_t> num_erases;
@@ -68,7 +67,6 @@ struct HashtablezInfo {
   // guards the ability to restore the sample to a pristine state.  This
   // prevents races with sampling and resurrecting an object.
 /*   absl::Mutex init_mu; */
-#endif  
   HashtablezInfo* next;
   HashtablezInfo* dead /* GUARDED_BY(init_mu) */;
 
