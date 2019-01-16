@@ -78,11 +78,9 @@ struct HashtablezInfo {
   // lock.
 #endif  
   static constexpr int kMaxStackDepth = 64;
-#if 0  
   absl::Time create_time;
   int32_t depth;
   void* stack[kMaxStackDepth];
-#endif  
 };
 
 inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
