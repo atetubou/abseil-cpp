@@ -147,7 +147,9 @@ void HashtablezInfo::PrepareForSampling() {
 
 HashtablezSampler::HashtablezSampler()
     : dropped_samples_(0), size_estimate_(0), all_(nullptr) {
-  /* absl::MutexLock l(&graveyard_.init_mu); */
+#if 0      
+  absl::base_internal::SpinLockHolder l(&graveyard_.init_mu);
+#endif  
   graveyard_.dead = &graveyard_;
 }
 
@@ -170,8 +172,8 @@ void HashtablezSampler::PushNew(HashtablezInfo* sample) {
 
 void HashtablezSampler::PushDead(HashtablezInfo* sample) {
 #if 0  
-  /* absl::MutexLock graveyard_lock(&graveyard_.init_mu); */
-  /* absl::MutexLock sample_lock(&sample->init_mu); */
+  absl::base_internal::SpinLockHolder graveyard_lock(&graveyard_.init_mu);
+  absl::base_internal::SpinLockHolder sample_lock(&sample->init_mu);
   sample->dead = graveyard_.dead;
   graveyard_.dead = sample;
 #endif  
