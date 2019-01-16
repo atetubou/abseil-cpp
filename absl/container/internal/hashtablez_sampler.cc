@@ -144,9 +144,7 @@ void HashtablezInfo::PrepareForSampling() {
 HashtablezSampler::HashtablezSampler()
     : dropped_samples_(0), size_estimate_(0), all_(nullptr) {
   /* absl::MutexLock l(&graveyard_.init_mu); */
-#if 0  
   graveyard_.dead = &graveyard_;
-#endif  
 }
 
 HashtablezSampler::~HashtablezSampler() {
