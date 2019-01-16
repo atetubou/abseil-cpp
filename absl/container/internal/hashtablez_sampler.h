@@ -110,7 +110,7 @@ class HashtablezInfoHandle {
   explicit HashtablezInfoHandle(HashtablezInfo* info) : info_(info) {}
   ~HashtablezInfoHandle() {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
-    // UnsampleSlow(info_);
+    UnsampleSlow(info_);
   }
 
   HashtablezInfoHandle(const HashtablezInfoHandle&) = delete;

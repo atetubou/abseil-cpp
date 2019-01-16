@@ -247,8 +247,6 @@ HashtablezInfo* SampleSlow(int64_t* next_sample) {
   return HashtablezSampler::Global().Register();
 }
 
-#if 1
-
 void UnsampleSlow(HashtablezInfo* info) {
   HashtablezSampler::Global().Unregister(info);
 }
@@ -296,8 +294,6 @@ void SetHashtablezMaxSamples(int32_t max) {
                  static_cast<long long>(max));  // NOLINT(runtime/int)
   }
 }
-
-#endif
 
 }  // namespace container_internal
 }  // namespace absl
