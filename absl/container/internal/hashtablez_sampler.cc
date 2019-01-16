@@ -136,8 +136,12 @@ void HashtablezInfo::PrepareForSampling() {
   // with LTO).  We use the ability to exclude stacks by regex when encoding
   // instead.
 #endif  
+
+#if 0  // This is one of culprit.
   depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
                               /* skip_count= */ 0);
+#endif
+
   dead = nullptr;
 }
 
