@@ -129,8 +129,8 @@ void HashtablezInfo::PrepareForSampling() {
   total_probe_length.store(0, std::memory_order_relaxed);
   hashes_bitwise_or.store(0, std::memory_order_relaxed);
   hashes_bitwise_and.store(~size_t{}, std::memory_order_relaxed);
-#if 0
 
+#if 0  // This is one of culprit.
   create_time = absl::Now();
   // The inliner makes hardcoded skip_count difficult (especially when combined
   // with LTO).  We use the ability to exclude stacks by regex when encoding
