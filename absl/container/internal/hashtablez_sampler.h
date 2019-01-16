@@ -68,6 +68,7 @@ struct HashtablezInfo {
   // guards the ability to restore the sample to a pristine state.  This
   // prevents races with sampling and resurrecting an object.
 /*   absl::Mutex init_mu; */
+#endif  
   HashtablezInfo* next;
   HashtablezInfo* dead /* GUARDED_BY(init_mu) */;
 
@@ -76,7 +77,6 @@ struct HashtablezInfo {
   // These are guarded by init_mu, but that is not externalized to clients, who
   // can only read them during `HashtablezSampler::Iterate` which will hold the
   // lock.
-#endif  
   static constexpr int kMaxStackDepth = 64;
   absl::Time create_time;
   int32_t depth;
