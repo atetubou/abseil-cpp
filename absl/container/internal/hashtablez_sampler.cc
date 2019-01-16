@@ -134,11 +134,8 @@ void HashtablezInfo::PrepareForSampling() {
   // instead.
 #endif
 
-#if 0  // This is one of culprit.
   depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
                               /* skip_count= */ 0);
-#endif
-
   dead = nullptr;
 }
 
