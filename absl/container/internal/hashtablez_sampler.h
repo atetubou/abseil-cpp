@@ -67,6 +67,8 @@ struct HashtablezInfo {
   // comments on `HashtablezSampler::all_` for details on these.  `init_mu`
   // guards the ability to restore the sample to a pristine state.  This
   // prevents races with sampling and resurrecting an object.
+
+  // Using absl::Mutex is one of culprit.
   absl::base_internal::SpinLock init_mu;
   HashtablezInfo* next;
   HashtablezInfo* dead GUARDED_BY(init_mu);
@@ -84,20 +86,16 @@ struct HashtablezInfo {
 
 inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
                                      size_t capacity) {
-#if 0                                       
   info->size.store(size, std::memory_order_relaxed);
   info->capacity.store(capacity, std::memory_order_relaxed);
-#endif  
 }
 
 void RecordInsertSlow(HashtablezInfo* info, size_t hash,
                       size_t distance_from_desired);
 
 inline void RecordEraseSlow(HashtablezInfo* info) {
-#if 0  
   info->size.fetch_sub(1, std::memory_order_relaxed);
   info->num_erases.fetch_add(1, std::memory_order_relaxed);
-#endif  
 }
 
 HashtablezInfo* SampleSlow(int64_t* next_sample);
