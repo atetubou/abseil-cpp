@@ -132,7 +132,7 @@ void HashtablezInfo::PrepareForSampling() {
   // The inliner makes hardcoded skip_count difficult (especially when combined
   // with LTO).  We use the ability to exclude stacks by regex when encoding
   // instead.
-#endif  
+#endif
 
 #if 0  // This is one of culprit.
   depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
@@ -146,7 +146,7 @@ HashtablezSampler::HashtablezSampler()
     : dropped_samples_(0), size_estimate_(0), all_(nullptr) {
 #if 0  // This is one of culprit.
   absl::base_internal::SpinLockHolder l(&graveyard_.init_mu);
-#endif  
+#endif
   graveyard_.dead = &graveyard_;
 }
 
@@ -168,10 +168,10 @@ void HashtablezSampler::PushNew(HashtablezInfo* sample) {
 }
 
 void HashtablezSampler::PushDead(HashtablezInfo* sample) {
-#if 0  
+#if 0
   absl::base_internal::SpinLockHolder graveyard_lock(&graveyard_.init_mu);
   absl::base_internal::SpinLockHolder sample_lock(&sample->init_mu);
-#endif  
+#endif
   sample->dead = graveyard_.dead;
   graveyard_.dead = sample;
 }
@@ -179,7 +179,7 @@ void HashtablezSampler::PushDead(HashtablezInfo* sample) {
 HashtablezInfo* HashtablezSampler::PopDead() {
 #if 0
   absl::base_internal::SpinLockHolder graveyard_lock(&graveyard_.init_mu);
-#endif  
+#endif
 
   // The list is circular, so eventually it collapses down to
   //   graveyard_.dead == &graveyard_
@@ -189,7 +189,7 @@ HashtablezInfo* HashtablezSampler::PopDead() {
 
 #if 0
   absl::base_internal::SpinLockHolder sample_lock(&sample->init_mu);
-#endif  
+#endif
   graveyard_.dead = sample->dead;
   sample->PrepareForSampling();
   return sample;
@@ -222,14 +222,15 @@ int64_t HashtablezSampler::Iterate(
     const std::function<void(const HashtablezInfo& stack)>& f) {
   HashtablezInfo* s = all_.load(std::memory_order_acquire);
   while (s != nullptr) {
-#if 0    
+#if 0
     absl::base_internal::SpinLockHolder l(&s->init_mu);
-#endif    
+#endif
     if (s->dead == nullptr) {
       f(*s);
     }
     s = s->next;
   }
+
   return dropped_samples_.load(std::memory_order_relaxed);
 }
 
