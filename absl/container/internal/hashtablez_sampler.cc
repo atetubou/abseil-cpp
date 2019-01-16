@@ -137,8 +137,8 @@ void HashtablezInfo::PrepareForSampling() {
   // instead.
   depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
                               /* skip_count= */ 0);
-  dead = nullptr;
 #endif  
+  dead = nullptr;
 }
 
 HashtablezSampler::HashtablezSampler()
