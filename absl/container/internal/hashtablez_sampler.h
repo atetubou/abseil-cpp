@@ -133,7 +133,7 @@ class HashtablezInfoHandle {
 
   inline void RecordInsert(size_t hash, size_t distance_from_desired) {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
-    // RecordInsertSlow(info_, hash, distance_from_desired);
+    RecordInsertSlow(info_, hash, distance_from_desired);
   }
 
   inline void RecordErase() {
