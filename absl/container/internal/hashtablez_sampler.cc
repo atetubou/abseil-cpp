@@ -180,7 +180,9 @@ void HashtablezSampler::PushDead(HashtablezInfo* sample) {
 }
 
 HashtablezInfo* HashtablezSampler::PopDead() {
-  /* absl::MutexLock graveyard_lock(&graveyard_.init_mu); */
+#if 0
+  absl::base_internal::SpinLockHolder graveyard_lock(&graveyard_.init_mu);
+#endif  
 
   // The list is circular, so eventually it collapses down to
   //   graveyard_.dead == &graveyard_
@@ -188,7 +190,9 @@ HashtablezInfo* HashtablezSampler::PopDead() {
   HashtablezInfo* sample = graveyard_.dead;
   if (sample == &graveyard_) return nullptr;
 
-  /* absl::MutexLock sample_lock(&sample->init_mu); */
+#if 0
+  absl::base_internal::SpinLockHolder sample_lock(&sample->init_mu);
+#endif  
   graveyard_.dead = sample->dead;
   sample->PrepareForSampling();
   return sample;
@@ -221,7 +225,9 @@ int64_t HashtablezSampler::Iterate(
     const std::function<void(const HashtablezInfo& stack)>& f) {
   HashtablezInfo* s = all_.load(std::memory_order_acquire);
   while (s != nullptr) {
-    /* absl::MutexLock l(&s->init_mu); */
+#if 0    
+    absl::base_internal::SpinLockHolder l(&s->init_mu);
+#endif    
     if (s->dead == nullptr) {
       f(*s);
     }
