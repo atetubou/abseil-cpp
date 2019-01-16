@@ -157,13 +157,11 @@ HashtablezSampler::~HashtablezSampler() {
 }
 
 void HashtablezSampler::PushNew(HashtablezInfo* sample) {
-#if 0  
   sample->next = all_.load(std::memory_order_relaxed);
   while (!all_.compare_exchange_weak(sample->next, sample,
                                      std::memory_order_release,
                                      std::memory_order_relaxed)) {
   }
-#endif  
 }
 
 void HashtablezSampler::PushDead(HashtablezInfo* sample) {
