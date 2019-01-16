@@ -147,7 +147,7 @@ void HashtablezInfo::PrepareForSampling() {
 
 HashtablezSampler::HashtablezSampler()
     : dropped_samples_(0), size_estimate_(0), all_(nullptr) {
-#if 0      
+#if 0  // This is one of culprit.
   absl::base_internal::SpinLockHolder l(&graveyard_.init_mu);
 #endif  
   graveyard_.dead = &graveyard_;
@@ -174,13 +174,12 @@ void HashtablezSampler::PushDead(HashtablezInfo* sample) {
 #if 0  
   absl::base_internal::SpinLockHolder graveyard_lock(&graveyard_.init_mu);
   absl::base_internal::SpinLockHolder sample_lock(&sample->init_mu);
+#endif  
   sample->dead = graveyard_.dead;
   graveyard_.dead = sample;
-#endif  
 }
 
 HashtablezInfo* HashtablezSampler::PopDead() {
-#if 0  
   /* absl::MutexLock graveyard_lock(&graveyard_.init_mu); */
 
   // The list is circular, so eventually it collapses down to
@@ -193,8 +192,6 @@ HashtablezInfo* HashtablezSampler::PopDead() {
   graveyard_.dead = sample->dead;
   sample->PrepareForSampling();
   return sample;
-#endif
-  return nullptr;  
 }
 
 HashtablezInfo* HashtablezSampler::Register() {
