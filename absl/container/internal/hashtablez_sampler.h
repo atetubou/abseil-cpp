@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "absl/base/optimization.h"
+#include "absl/base/internal/spinlock.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/utility/utility.h"
 
@@ -50,7 +51,7 @@ struct HashtablezInfo {
 
   // Puts the object into a clean state, fills in the logically `const` members,
   // blocking for any readers that are currently sampling the object.
-  void PrepareForSampling() /* EXCLUSIVE_LOCKS_REQUIRED(init_mu) */;
+  void PrepareForSampling() EXCLUSIVE_LOCKS_REQUIRED(init_mu);
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.
@@ -66,9 +67,9 @@ struct HashtablezInfo {
   // comments on `HashtablezSampler::all_` for details on these.  `init_mu`
   // guards the ability to restore the sample to a pristine state.  This
   // prevents races with sampling and resurrecting an object.
-/*   absl::Mutex init_mu; */
+  absl::base_internal::SpinLock init_mu;
   HashtablezInfo* next;
-  HashtablezInfo* dead /* GUARDED_BY(init_mu) */;
+  HashtablezInfo* dead GUARDED_BY(init_mu);
 
   // All of the fields below are set by `PrepareForSampling`, they must not be
   // mutated in `Record*` functions.  They are logically `const` in that sense.
