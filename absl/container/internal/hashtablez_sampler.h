@@ -54,7 +54,7 @@ struct HashtablezInfo {
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.
-#if 0  
+#if 1
   std::atomic<size_t> capacity;
   std::atomic<size_t> size;
   std::atomic<size_t> num_erases;
