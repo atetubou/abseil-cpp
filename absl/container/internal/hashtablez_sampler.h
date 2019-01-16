@@ -120,7 +120,7 @@ class HashtablezInfoHandle {
       : info_(absl::exchange(o.info_, nullptr)) {}
   HashtablezInfoHandle& operator=(HashtablezInfoHandle&& o) noexcept {
     if (ABSL_PREDICT_FALSE(info_ != nullptr)) {
-      // UnsampleSlow(info_);
+      UnsampleSlow(info_);
     }
     info_ = absl::exchange(o.info_, nullptr);
     return *this;
