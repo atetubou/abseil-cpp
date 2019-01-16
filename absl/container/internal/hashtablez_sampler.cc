@@ -148,14 +148,12 @@ HashtablezSampler::HashtablezSampler()
 }
 
 HashtablezSampler::~HashtablezSampler() {
-#if 0  
   HashtablezInfo* s = all_.load(std::memory_order_acquire);
   while (s != nullptr) {
     HashtablezInfo* next = s->next;
     delete s;
     s = next;
   }
-#endif  
 }
 
 void HashtablezSampler::PushNew(HashtablezInfo* sample) {
