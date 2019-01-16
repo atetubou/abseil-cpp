@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
 #include "absl/container/internal/hashtablez_sampler.h"
 
 #include <atomic>
@@ -119,7 +117,6 @@ HashtablezSampler& HashtablezSampler::Global() {
 
 HashtablezInfo::HashtablezInfo() { PrepareForSampling(); }
 HashtablezInfo::~HashtablezInfo() = default;
-
 
 void HashtablezInfo::PrepareForSampling() {
   capacity.store(0, std::memory_order_relaxed);

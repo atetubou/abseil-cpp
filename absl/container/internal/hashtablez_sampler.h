@@ -162,8 +162,7 @@ inline HashtablezInfoHandle Sample() {
   if (ABSL_PREDICT_TRUE(--next_sample > 0)) {
     return HashtablezInfoHandle(nullptr);
   }
-  //return HashtablezInfoHandle(nullptr);
- return HashtablezInfoHandle(SampleSlow(&next_sample));
+  return HashtablezInfoHandle(SampleSlow(&next_sample));
 }
 
 // Holds samples and their associated stack traces with a soft limit of
