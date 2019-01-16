@@ -217,7 +217,6 @@ void HashtablezSampler::Unregister(HashtablezInfo* sample) {
 int64_t HashtablezSampler::Iterate(
     const std::function<void(const HashtablezInfo& stack)>& f) {
   HashtablezInfo* s = all_.load(std::memory_order_acquire);
-#if 0   
   while (s != nullptr) {
     /* absl::MutexLock l(&s->init_mu); */
     if (s->dead == nullptr) {
@@ -225,7 +224,6 @@ int64_t HashtablezSampler::Iterate(
     }
     s = s->next;
   }
-#endif 
   return dropped_samples_.load(std::memory_order_relaxed);
 }
 
