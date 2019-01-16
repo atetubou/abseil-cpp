@@ -265,6 +265,7 @@ void RecordInsertSlow(HashtablezInfo* info, size_t hash,
 #else
   probe_length /= 8;
 #endif
+
   info->hashes_bitwise_and.fetch_and(hash, std::memory_order_relaxed);
   info->hashes_bitwise_or.fetch_or(hash, std::memory_order_relaxed);
   info->max_probe_length.store(
