@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+
 #include "absl/container/internal/hashtablez_sampler.h"
 
 #include <atomic>
@@ -118,7 +120,9 @@ HashtablezSampler& HashtablezSampler::Global() {
 HashtablezInfo::HashtablezInfo() { PrepareForSampling(); }
 HashtablezInfo::~HashtablezInfo() = default;
 
+
 void HashtablezInfo::PrepareForSampling() {
+#if 0  
   capacity.store(0, std::memory_order_relaxed);
   size.store(0, std::memory_order_relaxed);
   num_erases.store(0, std::memory_order_relaxed);
@@ -134,40 +138,50 @@ void HashtablezInfo::PrepareForSampling() {
   depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
                               /* skip_count= */ 0);
   dead = nullptr;
+#endif  
 }
 
 HashtablezSampler::HashtablezSampler()
     : dropped_samples_(0), size_estimate_(0), all_(nullptr) {
-  absl::MutexLock l(&graveyard_.init_mu);
+  /* absl::MutexLock l(&graveyard_.init_mu); */
+#if 0  
   graveyard_.dead = &graveyard_;
+#endif  
 }
 
 HashtablezSampler::~HashtablezSampler() {
+#if 0  
   HashtablezInfo* s = all_.load(std::memory_order_acquire);
   while (s != nullptr) {
     HashtablezInfo* next = s->next;
     delete s;
     s = next;
   }
+#endif  
 }
 
 void HashtablezSampler::PushNew(HashtablezInfo* sample) {
+#if 0  
   sample->next = all_.load(std::memory_order_relaxed);
   while (!all_.compare_exchange_weak(sample->next, sample,
                                      std::memory_order_release,
                                      std::memory_order_relaxed)) {
   }
+#endif  
 }
 
 void HashtablezSampler::PushDead(HashtablezInfo* sample) {
-  absl::MutexLock graveyard_lock(&graveyard_.init_mu);
-  absl::MutexLock sample_lock(&sample->init_mu);
+#if 0  
+  /* absl::MutexLock graveyard_lock(&graveyard_.init_mu); */
+  /* absl::MutexLock sample_lock(&sample->init_mu); */
   sample->dead = graveyard_.dead;
   graveyard_.dead = sample;
+#endif  
 }
 
 HashtablezInfo* HashtablezSampler::PopDead() {
-  absl::MutexLock graveyard_lock(&graveyard_.init_mu);
+#if 0  
+  /* absl::MutexLock graveyard_lock(&graveyard_.init_mu); */
 
   // The list is circular, so eventually it collapses down to
   //   graveyard_.dead == &graveyard_
@@ -175,10 +189,12 @@ HashtablezInfo* HashtablezSampler::PopDead() {
   HashtablezInfo* sample = graveyard_.dead;
   if (sample == &graveyard_) return nullptr;
 
-  absl::MutexLock sample_lock(&sample->init_mu);
+  /* absl::MutexLock sample_lock(&sample->init_mu); */
   graveyard_.dead = sample->dead;
   sample->PrepareForSampling();
   return sample;
+#endif
+  return nullptr;  
 }
 
 HashtablezInfo* HashtablezSampler::Register() {
@@ -207,14 +223,15 @@ void HashtablezSampler::Unregister(HashtablezInfo* sample) {
 int64_t HashtablezSampler::Iterate(
     const std::function<void(const HashtablezInfo& stack)>& f) {
   HashtablezInfo* s = all_.load(std::memory_order_acquire);
+#if 0   
   while (s != nullptr) {
-    absl::MutexLock l(&s->init_mu);
+    /* absl::MutexLock l(&s->init_mu); */
     if (s->dead == nullptr) {
       f(*s);
     }
     s = s->next;
   }
-
+#endif 
   return dropped_samples_.load(std::memory_order_relaxed);
 }
 
@@ -237,6 +254,8 @@ HashtablezInfo* SampleSlow(int64_t* next_sample) {
 
   return HashtablezSampler::Global().Register();
 }
+
+#if 0
 
 void UnsampleSlow(HashtablezInfo* info) {
   HashtablezSampler::Global().Unregister(info);
@@ -285,5 +304,8 @@ void SetHashtablezMaxSamples(int32_t max) {
   }
 }
 
+#endif
+
 }  // namespace container_internal
 }  // namespace absl
+

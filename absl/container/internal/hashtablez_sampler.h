@@ -50,10 +50,11 @@ struct HashtablezInfo {
 
   // Puts the object into a clean state, fills in the logically `const` members,
   // blocking for any readers that are currently sampling the object.
-  void PrepareForSampling() EXCLUSIVE_LOCKS_REQUIRED(init_mu);
+  void PrepareForSampling() /* EXCLUSIVE_LOCKS_REQUIRED(init_mu) */;
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.
+#if 0  
   std::atomic<size_t> capacity;
   std::atomic<size_t> size;
   std::atomic<size_t> num_erases;
@@ -66,33 +67,40 @@ struct HashtablezInfo {
   // comments on `HashtablezSampler::all_` for details on these.  `init_mu`
   // guards the ability to restore the sample to a pristine state.  This
   // prevents races with sampling and resurrecting an object.
-  absl::Mutex init_mu;
+/*   absl::Mutex init_mu; */
   HashtablezInfo* next;
-  HashtablezInfo* dead GUARDED_BY(init_mu);
+  HashtablezInfo* dead /* GUARDED_BY(init_mu) */;
 
   // All of the fields below are set by `PrepareForSampling`, they must not be
   // mutated in `Record*` functions.  They are logically `const` in that sense.
   // These are guarded by init_mu, but that is not externalized to clients, who
   // can only read them during `HashtablezSampler::Iterate` which will hold the
   // lock.
+#endif  
   static constexpr int kMaxStackDepth = 64;
+#if 0  
   absl::Time create_time;
   int32_t depth;
   void* stack[kMaxStackDepth];
+#endif  
 };
 
 inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
                                      size_t capacity) {
+#if 0                                       
   info->size.store(size, std::memory_order_relaxed);
   info->capacity.store(capacity, std::memory_order_relaxed);
+#endif  
 }
 
 void RecordInsertSlow(HashtablezInfo* info, size_t hash,
                       size_t distance_from_desired);
 
 inline void RecordEraseSlow(HashtablezInfo* info) {
+#if 0  
   info->size.fetch_sub(1, std::memory_order_relaxed);
   info->num_erases.fetch_add(1, std::memory_order_relaxed);
+#endif  
 }
 
 HashtablezInfo* SampleSlow(int64_t* next_sample);
@@ -104,7 +112,7 @@ class HashtablezInfoHandle {
   explicit HashtablezInfoHandle(HashtablezInfo* info) : info_(info) {}
   ~HashtablezInfoHandle() {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
-    UnsampleSlow(info_);
+    // UnsampleSlow(info_);
   }
 
   HashtablezInfoHandle(const HashtablezInfoHandle&) = delete;
@@ -114,7 +122,7 @@ class HashtablezInfoHandle {
       : info_(absl::exchange(o.info_, nullptr)) {}
   HashtablezInfoHandle& operator=(HashtablezInfoHandle&& o) noexcept {
     if (ABSL_PREDICT_FALSE(info_ != nullptr)) {
-      UnsampleSlow(info_);
+      // UnsampleSlow(info_);
     }
     info_ = absl::exchange(o.info_, nullptr);
     return *this;
@@ -127,7 +135,7 @@ class HashtablezInfoHandle {
 
   inline void RecordInsert(size_t hash, size_t distance_from_desired) {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
-    RecordInsertSlow(info_, hash, distance_from_desired);
+    // RecordInsertSlow(info_, hash, distance_from_desired);
   }
 
   inline void RecordErase() {
@@ -159,7 +167,8 @@ inline HashtablezInfoHandle Sample() {
   if (ABSL_PREDICT_TRUE(--next_sample > 0)) {
     return HashtablezInfoHandle(nullptr);
   }
-  return HashtablezInfoHandle(SampleSlow(&next_sample));
+  //return HashtablezInfoHandle(nullptr);
+ return HashtablezInfoHandle(SampleSlow(&next_sample));
 }
 
 // Holds samples and their associated stack traces with a soft limit of
