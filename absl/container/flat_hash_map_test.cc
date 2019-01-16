@@ -14,6 +14,8 @@
 
 #include "absl/container/flat_hash_map.h"
 
+#include <windows.h>
+
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/unordered_map_constructor_test.h"
 #include "absl/container/internal/unordered_map_lookup_test.h"
@@ -81,6 +83,7 @@ TEST(FlatHashMap, StandardLayout) {
 struct balast {};
 
 TEST(FlatHashMap, IteratesMsan) {
+  EXPECT_EQ(NULL, GetModuleHandleW(L"gdi32.dll"));
   // Because SwissTable randomizes on pointer addresses, we keep old tables
   // around to ensure we don't reuse old memory.
   std::vector<absl::flat_hash_map<int, balast>> garbage;
